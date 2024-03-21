@@ -1,0 +1,14 @@
+Redbase file format
+
+bytes 0-6 = header "redbase"
+
+bytes 7-10 = table index root ptr (trie) Name -> Table Pointer
+bytes 11-14 = record head ptr (linked list) [ (location, size_blocks, size_bytes, free)... ]
+
+Table format
+bytes 0-3 = Rows (LL) Pointer
+bytes 4-7 = Primary Key Index (Trie) Pointer
+
+Row format
+
+
