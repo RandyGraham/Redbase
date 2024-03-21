@@ -10,9 +10,9 @@ function MemoryManager.new(file_handle, head_ptr_ptr)
     util.write(file_handle, head_ptr_ptr, string.pack(">I4", pointer))
 end
 
-function MemoryManager.init(file_handle, head_ptr_ptr)
+function MemoryManager.load(file_handle, head_ptr_ptr)
     local object = {}
-    object.block_size = 16
+    object.block_size = 8
     object.file_handle = file_handle
     object.head_ptr_ptr = head_ptr_ptr
     return setmetatable(object, MemoryManager)

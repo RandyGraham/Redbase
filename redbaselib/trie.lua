@@ -67,7 +67,7 @@ function Trie.new(file_handle, root_ptr_ptr)
     util.write(file_handle, root_ptr_ptr, string.pack(">I4", root_ptr))
 end
 
-function Trie.init(file_handle, root_ptr)
+function Trie.load(file_handle, root_ptr)
    local object = {}
    object.file_handle = file_handle
    object.root_ptr = root_ptr
