@@ -7,7 +7,7 @@ function LL.new(file_handle, payload_size)
     return pointer
 end
 
-function LL.load(file_handle, position, payload_manager)
+function LL.load(file_handle, position, payload_manager, allocator)
     local bytes = util.read(file_handle, position, 8+payload_manager.size)
     local object = {
         position = position,
@@ -15,6 +15,7 @@ function LL.load(file_handle, position, payload_manager)
         data = payload_manager.load(string.sub(bytes, 5, 5+payload_manager.size-1)),
         payload_manager = payload_manager,
         file_handle = file_handle,
+        allocator = allocator,
         next_ptr = util.unpack(">I4", string.sub(bytes, 5+payload_manager.size, 8+payload_manager.size)),
     }
     function object:get_next()
@@ -58,6 +59,32 @@ function LL.load(file_handle, position, payload_manager)
         self.next_ptr = pointer
         next:save()
         self:save()
+    end
+    function object:free()
+        self.allocator.free(self.position)
+    end
+    function object:free_forward()
+        if self:has_next() then 
+            self:get_next():free_forward()
+        end
+        self:free()
+    end
+    function object:free_backward()
+        if self:has_prev() then
+            self:get_prev():free_backward()
+        end
+        self:free()
+    end
+    function object:free_all()
+        if self:has_next() then 
+            local next = self:get_next()
+            next:free_forward()
+        end
+        if self:has_prev() then
+            local prev = self:get_prev()
+            prev:free_backwards()
+        end
+        self:free()
     end
     return object
 end

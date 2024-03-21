@@ -67,10 +67,11 @@ function Trie.new(file_handle, root_ptr_ptr)
     util.write(file_handle, root_ptr_ptr, string.pack(">I4", root_ptr))
 end
 
-function Trie.load(file_handle, root_ptr)
+function Trie.load(file_handle, root_ptr, allocator)
    local object = {}
    object.file_handle = file_handle
    object.root_ptr = root_ptr
+   object.allocator = allocator
    return setmetatable(object, Trie) 
 end
 
@@ -105,7 +106,7 @@ function Trie:insert(key, value)
         keybyte = keybytes[i]
         print(keybyte)
         if current_node.next_pointers[keybyte] == 0 then
-            local new_node = util.allocate(self.file_handle, TrieNodeSize)
+            local new_node = self.allocator.allocate(self.file_handle, TrieNodeSize)
             current_node.next_pointers[keybyte] = new_node
             print("     ", new_node)
             Node.save(self.file_handle, current_node)
@@ -117,6 +118,16 @@ function Trie:insert(key, value)
     keybyte = keybytes[#keybytes]
     current_node.record_pointers[keybyte] = value
     Node.save(self.file_handle, current_node)
+end
+
+function Trie:free(pointer)
+    local node = Node.load(self.file_handle, pointer)
+    for i=1, 16 do 
+        if node.next_pointers[i] > 0 then 
+            self:free(node.next_pointers[i])
+        end
+    end
+    self.allocator.free(pointer)
 end
 
 return Trie
