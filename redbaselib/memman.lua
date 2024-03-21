@@ -26,9 +26,9 @@ end
 function MemoryManager:allocate_fast(size)
     local size_blocks
     if size % self.block_size == 0 then 
-        size_blocks = size // self.block_size
+        size_blocks = math.floor(size / self.block_size)
     else
-        size_blocks = (size // self.block_size) + 1
+        size_blocks = math.floor(size / self.block_size) + 1
     end
     local head = self:get_head()
     if head.data.occupiedcount == 64 then 
@@ -48,6 +48,7 @@ function MemoryManager:allocate_fast(size)
             head.data.size[i] = size
             head.data.positions[i] = new_pointer
             head:save()
+            print("Memory Manager :: New block of size " .. size_blocks*self.block_size .. " @ " .. new_pointer)
             return new_pointer
         end
     end

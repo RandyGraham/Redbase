@@ -35,7 +35,7 @@ function M.ensure(...)
         end
         --Asset arguement type == expected type
         if skip == false and type_ ~= type(argument) then 
-            error("Guard Error: Expected arguement of type " .. type_ .. " Got argument of type " .. type(argument) .. " (" .. tostring(argument) .. ")" .. " @ pos " .. i//2)
+            error("Guard Error: Expected arguement of type " .. type_ .. " Got argument of type " .. type(argument) .. " (" .. tostring(argument) .. ")" .. " @ pos " .. math.floor(i/2))
         end
     end
 end
@@ -67,6 +67,14 @@ function M.read(file_handle, location, size)
     return bytes
 end
 
+function M.allocate(file_handle, size)
+    local position = file_handle:seek("end", 0)
+    file_handle:write(M.zeros(size))
+    file_handle:flush()
+    print("Allocated " .. size .. " bytes")
+    return position
+end
+
 function M.slice(array, start, stop)
     local slice = {}
     for i=start, stop do 
@@ -95,14 +103,6 @@ function M.exists(path)
     else
         return fs.exists(path)
     end
-end
-
-function M.allocate(file_handle, size)
-    local position = file_handle:seek("end", 0)
-    file_handle:write(M.zeros(size))
-    file_handle:flush()
-    print("Allocated " .. size .. " bytes")
-    return position
 end
 
 function M.unpack(fmt, s) 
