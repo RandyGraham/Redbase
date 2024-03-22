@@ -25,8 +25,9 @@ function Redbase.connect(file_path)
         file_handle:close()
     end
     file_handle = util.get_file_handle(file_path, "r+b")
+    object.unmanaged_allocator = util.unman_allocator.load(file_handle)
     object.file_handle = file_handle
-    object.index = trie.load(file_handle, 10)
+    object.index = trie.load(file_handle, 10, object.unmanaged_allocator)
     object.memory_manager = memman.load(file_handle, 14)
     return setmetatable(object, Redbase)
 end

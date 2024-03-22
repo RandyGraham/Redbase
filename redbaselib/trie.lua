@@ -62,9 +62,9 @@ end
 local Trie = {}
 Trie.__index = Trie
 
-function Trie.new(file_handle, root_ptr_ptr)
-    local root_ptr = util.allocate(file_handle, TrieNodeSize)
-    util.write(file_handle, root_ptr_ptr, string.pack(">I4", root_ptr))
+function Trie.new(allocator)
+    local root_ptr = allocator.allocate(TrieNodeSize)
+    return root_ptr
 end
 
 function Trie.load(file_handle, root_ptr, allocator)
@@ -106,7 +106,7 @@ function Trie:insert(key, value)
         keybyte = keybytes[i]
         print(keybyte)
         if current_node.next_pointers[keybyte] == 0 then
-            local new_node = self.allocator.allocate(self.file_handle, TrieNodeSize)
+            local new_node = self.allocator:allocate(TrieNodeSize)
             current_node.next_pointers[keybyte] = new_node
             print("     ", new_node)
             Node.save(self.file_handle, current_node)

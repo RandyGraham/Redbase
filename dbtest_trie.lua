@@ -8,7 +8,8 @@ util.allocate(file_handle, 4)
 trie.new(file_handle, 0)
 
 local data = string.unpack(">I4", util.read(file_handle, 0, 4))
-local testtrie = trie.init(file_handle, data)
+local allocator = util.unman_allocator.load(file_handle)
+local testtrie = trie.load(file_handle, data, allocator)
 
 while true do 
     local userin = io.read()

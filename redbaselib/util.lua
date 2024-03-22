@@ -75,6 +75,22 @@ function M.allocate(file_handle, size)
     return position
 end
 
+M.unman_allocator = {}
+M.unman_allocator.__index = M.unman_allocator
+function M.unman_allocator.load(file_handle)
+    local object = {}
+    object.file_handle = file_handle
+    return setmetatable(object, M.unman_allocator)
+end
+
+function M.unman_allocator:allocate(size)
+    return M.allocate(self.file_handle, size)
+end
+
+function M.unman_allocator:free(pointer)
+    error("Free called on unmanaged pointer")
+end
+
 function M.slice(array, start, stop)
     local slice = {}
     for i=start, stop do 

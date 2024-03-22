@@ -41,7 +41,7 @@ function LL.load(file_handle, position, payload_manager, allocator)
         util.write(file_handle, self.position, buffer)
     end
     function object:append()
-        local pointer = util.allocate(file_handle, self.payload_manager.size + 8)
+        local pointer = self.allocator.allocate(file_handle, self.payload_manager.size + 8)
         self.next_ptr = pointer
         self:save()
         local next = self:get_next()
@@ -49,7 +49,7 @@ function LL.load(file_handle, position, payload_manager, allocator)
         next:save()
     end
     function object:insert()
-        local pointer = util.allocate(file_handle, self.payload_manager.size + 8)
+        local pointer = self.allocator.allocate(file_handle, self.payload_manager.size + 8)
         if not self:has_next() then 
             self:append()
             return

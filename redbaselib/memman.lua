@@ -23,7 +23,7 @@ function MemoryManager:get_head()
     return LL.load(self.file_handle, head_ptr, fb_pb_man)
 end
 
-function MemoryManager:allocate_fast(size)
+function MemoryManager:allocate(size)
     local size_blocks
     if size % self.block_size == 0 then 
         size_blocks = math.floor(size / self.block_size)
